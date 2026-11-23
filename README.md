@@ -8,6 +8,11 @@ A multi-platform proxy client based on ClashMeta. Simple to use, open source and
 
 **English** · [简体中文](README_zh_CN.md)
 
+> **This is a personal fork of [FlClash](https://github.com/chen08209/FlClash).**
+> Upstream is untouched apart from one addition: a dashboard card that counts this machine's proxied traffic
+> per day, week and month, for the running subscription or for all of them, with three months of history kept
+> in the local database. → [What this fork adds](#what-this-fork-adds)
+
 [![Release](https://img.shields.io/github/v/release/chen08209/FlClash?style=flat-square&label=release)](https://github.com/chen08209/FlClash/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases)
 [![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
@@ -37,6 +42,20 @@ A multi-platform proxy client based on ClashMeta. Simple to use, open source and
 - **Platform touches**: a Quick Settings tile, per-app proxy and Android TV support on Android; a tray menu and
   global hotkeys on the desktop.
 - **Open source and ad-free**, licensed under GPL-3.0.
+
+## What this fork adds
+
+One feature, on top of an otherwise unmodified upstream client: **proxy traffic statistics**.
+
+- A card at the bottom of the dashboard, switchable between today, this week and this month, and between the
+  running subscription and all subscriptions.
+- Counts proxied traffic only, whatever the "proxy only" statistics setting says, so a recorded day keeps its
+  meaning.
+- Written to the local database every ten seconds, one row per subscription and day. A core restart or a
+  subscription switch does not lose what was already counted.
+- Keeps the running month and the two before it, dropping older days.
+
+Everything else, the build and packaging steps included, is upstream's.
 
 ## Download
 
