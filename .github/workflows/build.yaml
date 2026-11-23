@@ -177,6 +177,16 @@ jobs:
       - name: Build debug bundle
         run: flutter build ${{ matrix.platform }} --debug
 
+      # A fork keeps the Windows bundle so the traffic card can be tried on a
+      # machine without a local MSVC toolchain.
+      - name: Upload Windows debug bundle
+        if: matrix.platform == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-debug
+          path: build/windows/x64/runner/Debug
+          if-no-files-found: error
+
   go:
     name: Go core
     if: *checks

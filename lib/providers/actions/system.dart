@@ -56,6 +56,8 @@ class SystemAction extends _$SystemAction {
     }
     await Future.wait([
       ?saveOperation,
+      // The last ten seconds of traffic would otherwise stay in memory.
+      trafficLedger.flush(),
       bootGuard.markClosed(),
       ?systemProxyQueue?.close(),
     ]);

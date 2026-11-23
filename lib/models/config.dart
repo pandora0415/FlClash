@@ -138,7 +138,12 @@ const List<DashboardWidget> defaultDashboardWidgets = [
   DashboardWidget.profiles,
   DashboardWidget.proxyGroups,
   DashboardWidget.connectionStats,
+  DashboardWidget.trafficStats,
 ];
+
+/// Cards added after a build was handed out: a saved list never has them,
+/// and they belong at the end, where a short window scrolls to.
+const _addedDashboardWidgets = {DashboardWidget.trafficStats};
 
 /// A phone starts without the VPN switch and the diagnostic cards, which stay
 /// addable. The field default keeps the shared list because it must be const.
@@ -211,7 +216,13 @@ List<DashboardWidget> dashboardWidgetsFromJson(
       !dashboardWidgets.every(_retiredDashboardWidgets.contains)) {
     return platformDefaultDashboardWidgets;
   }
-  return {DashboardWidget.currentOutbound, ...kept}.toList();
+  final result = {DashboardWidget.currentOutbound, ...kept}.toList();
+  for (final widget in _addedDashboardWidgets) {
+    if (!result.contains(widget)) {
+      result.add(widget);
+    }
+  }
+  return result;
 }
 
 Object? _readSidebarExpanded(Map<dynamic, dynamic> json, String key) {

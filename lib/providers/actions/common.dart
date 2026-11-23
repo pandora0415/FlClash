@@ -72,6 +72,21 @@ class CommonAction extends _$CommonAction {
       }
       if (totalTraffic != null) {
         ref.read(totalTrafficProvider.notifier).value = totalTraffic;
+        // The ledger always counts the proxy's own bytes, whatever the
+        // dashboard is set to show, so yesterday's rows keep their meaning.
+        final profileId = ref.read(currentProfileProvider)?.id;
+        if (profileId != null) {
+          final proxyTotal = onlyStatisticsProxy
+              ? totalTraffic
+              : await _readTraffic(() => _core.getTotalTraffic(true));
+          if (proxyTotal != null) {
+            trafficLedger.sample(
+              profileId: profileId,
+              up: proxyTotal.up,
+              down: proxyTotal.down,
+            );
+          }
+        }
       }
     } finally {
       _isUpdatingTraffic = false;

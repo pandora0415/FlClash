@@ -218,6 +218,7 @@ class _DesktopDashboard extends StatelessWidget {
                   row(const [(1, ServiceStatusCard()), (1, MemoryInfo())]),
                 ),
                 sized(summaryHeight, summaries),
+                const RepaintBoundary(child: TrafficStatsCard()),
               ],
             ),
           );
