@@ -1213,7 +1213,11 @@ void main() {
           'memoryInfo',
           'overrideNtpButton',
         ]),
-        [DashboardWidget.currentOutbound, DashboardWidget.memoryInfo],
+        [
+          DashboardWidget.currentOutbound,
+          DashboardWidget.memoryInfo,
+          DashboardWidget.trafficStats,
+        ],
       );
     });
 
