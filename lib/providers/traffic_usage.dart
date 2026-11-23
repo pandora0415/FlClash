@@ -2,12 +2,18 @@ import 'dart:async';
 
 import 'package:fl_clash/database/database.dart';
 import 'package:fl_clash/providers/state.dart';
-import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'generated/traffic_usage.g.dart';
 
-String dayKey(DateTime time) => DateFormat('yyyy-MM-dd').format(time);
+/// Hand-rolled instead of `DateFormat`: the app sets a non-English
+/// `Intl.defaultLocale` without loading its date symbols, and a numeric
+/// pattern still throws there.
+String dayKey(DateTime time) {
+  final month = time.month.toString().padLeft(2, '0');
+  final day = time.day.toString().padLeft(2, '0');
+  return '${time.year}-$month-$day';
+}
 
 enum TrafficRange {
   today,
@@ -42,10 +48,12 @@ class _Bucket {
 /// The core keeps a total only since its own start, so every sample is a
 /// delta against the previous one. A total that went backwards means the core
 /// restarted: that sample then counts in full instead of as a difference.
+/// A day that turned over counts nothing: those bytes were the last day's.
 class TrafficLedger {
   int _up = 0;
   int _down = 0;
   int? _profileId;
+  String? _day;
   String? _purgedDay;
   final _pending = <String, _Bucket>{};
   Timer? _flushTimer;
@@ -53,10 +61,16 @@ class TrafficLedger {
   void sample({required int profileId, required num up, required num down}) {
     final currentUp = up.toInt();
     final currentDown = down.toInt();
+    final day = dayKey(DateTime.now());
     final switched = _profileId != profileId;
     final reset = currentUp < _up || currentDown < _down;
-    final deltaUp = (switched || reset) ? currentUp : currentUp - _up;
-    final deltaDown = (switched || reset) ? currentDown : currentDown - _down;
+    final rollover = !switched && !reset && _day != null && _day != day;
+    final deltaUp = (switched || reset)
+        ? currentUp
+        : (rollover ? 0 : currentUp - _up);
+    final deltaDown = (switched || reset)
+        ? currentDown
+        : (rollover ? 0 : currentDown - _down);
     if (switched) {
       _profileId = profileId;
       // What the old profile had not written yet belongs to it, not to this one.
@@ -64,10 +78,10 @@ class TrafficLedger {
     }
     _up = currentUp;
     _down = currentDown;
+    _day = day;
     if (deltaUp <= 0 && deltaDown <= 0) {
       return;
     }
-    final day = dayKey(DateTime.now());
     unawaited(_purgeIfNewDay(day));
     final bucket = _pending['$profileId|$day'] ??= _Bucket(profileId, day);
     bucket
