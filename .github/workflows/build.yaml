@@ -187,6 +187,20 @@ jobs:
           path: build/windows/x64/runner/Debug
           if-no-files-found: error
 
+      # A debug runner links the Visual Studio debug CRT, which no machine
+      # without Visual Studio has; the release bundle is what actually runs.
+      - name: Build release bundle (Windows)
+        if: matrix.platform == 'windows'
+        run: flutter build windows --release
+
+      - name: Upload Windows release bundle
+        if: matrix.platform == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: build/windows/x64/runner/Release
+          if-no-files-found: error
+
   go:
     name: Go core
     if: *checks
