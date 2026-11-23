@@ -8,6 +8,10 @@
 
 [English](README.md) · **简体中文**
 
+> **这是 [FlClash](https://github.com/chen08209/FlClash) 的个人分支。**
+> 上游什么都没改，只多了一处：仪表盘底部新增一张卡片，统计本机代理流量，可按本日、本周、本月查看，
+> 可只看当前订阅或汇总全部订阅，数据保留三个月，存在本地数据库里。→ [这个分支加了什么](#这个分支加了什么)
+
 [![Release](https://img.shields.io/github/v/release/chen08209/FlClash?style=flat-square&label=release)](https://github.com/chen08209/FlClash/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases)
 [![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
@@ -34,6 +38,17 @@
 - **备份与恢复**：通过 WebDAV 或本地文件。
 - **平台细节**：Android 上有快捷设置磁贴、分应用代理和 Android TV 支持；桌面端有托盘菜单和全局快捷键。
 - **开源无广告**，以 GPL-3.0 协议发布。
+
+## 这个分支加了什么
+
+在上游原样的客户端上加了一个功能：**本机代理流量统计**。
+
+- 仪表盘最下面一张卡片，可在本日、本周、本月之间切换，也可在当前订阅与全部订阅之间切换。
+- 只统计代理流量，不受设置里“仅统计代理”开关影响，已经记下的某一天含义不会变。
+- 每十秒写入一次本地数据库，每个订阅每天一行；核心重启、切换订阅都不会丢掉已经计入的流量。
+- 保留本月与前两个月，更早的自动清掉。
+
+除此之外，包括下面的构建与打包步骤，都与上游一致。
 
 ## 下载
 
