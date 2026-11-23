@@ -187,18 +187,56 @@ jobs:
           path: build/windows/x64/runner/Debug
           if-no-files-found: error
 
-      # A debug runner links the Visual Studio debug CRT, which no machine
-      # without Visual Studio has; the release bundle is what actually runs.
-      - name: Build release bundle (Windows)
-        if: matrix.platform == 'windows'
-        run: flutter build windows --release
+  # A debug runner links the Visual Studio debug CRT, which an ordinary machine
+  # does not have; this job ships the release installer a fork can hand out.
+  fork-installer:
+    name: Fork Windows installer
+    if: github.repository == 'pandora0415/FlClash'
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-      - name: Upload Windows release bundle
-        if: matrix.platform == 'windows'
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: ${{ env.BRANCH_CACHE }}
+          cache-dependency-path: core/go.sum
+
+      - name: Enable git long paths (Windows)
+        run: git config --global core.longpaths true
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: ${{ env.BRANCH_CACHE }}
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Fetch CA certificates
+        shell: bash
+        env:
+          CA_BUNDLE: cacert-2026-09-25.pem
+          CA_BUNDLE_SHA256: a41b5d356aea97a529fe27e0f7316d2f9d946d75927476cf9cf1b90637d00505
+        run: |
+          bundle=core/Clash.Meta/component/ca/ca-certificates.crt
+          curl -fsSL --retry 3 -o "$bundle" "https://curl.se/ca/$CA_BUNDLE"
+          echo "$CA_BUNDLE_SHA256  $bundle" | sha256sum -c -
+
+      - name: Package the release installer
+        run: dart run tool/package.dart windows -v
+
+      - name: Upload the installer
         uses: actions/upload-artifact@v4
         with:
-          name: windows-release
-          path: build/windows/x64/runner/Release
+          name: windows-installer
+          path: ./dist
           if-no-files-found: error
 
   go:
