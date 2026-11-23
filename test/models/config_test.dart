@@ -160,6 +160,7 @@ void main() {
         DashboardWidget.currentOutbound,
         DashboardWidget.networkSpeed,
         DashboardWidget.outboundMode,
+        DashboardWidget.trafficStats,
       ]);
 
       final alone = AppSettingProps.fromJson({
@@ -169,6 +170,7 @@ void main() {
         DashboardWidget.currentOutbound,
         DashboardWidget.outboundMode,
         DashboardWidget.networkSpeed,
+        DashboardWidget.trafficStats,
       ]);
     });
 
@@ -180,6 +182,7 @@ void main() {
         DashboardWidget.currentOutbound,
         DashboardWidget.networkSpeed,
         DashboardWidget.profiles,
+        DashboardWidget.trafficStats,
       ]);
 
       final both = AppSettingProps.fromJson({
@@ -188,6 +191,7 @@ void main() {
       expect(both.dashboardWidgets, [
         DashboardWidget.currentOutbound,
         DashboardWidget.networkSpeed,
+        DashboardWidget.trafficStats,
       ]);
     });
 
@@ -213,7 +217,10 @@ void main() {
         ['runTime'],
       ]) {
         final restored = AppSettingProps.fromJson({'dashboardWidgets': saved});
-        expect(restored.dashboardWidgets, [DashboardWidget.currentOutbound]);
+        expect(restored.dashboardWidgets, [
+          DashboardWidget.currentOutbound,
+          DashboardWidget.trafficStats,
+        ]);
       }
     });
 
@@ -230,6 +237,7 @@ void main() {
         DashboardWidget.currentOutbound,
         DashboardWidget.intranetIp,
         DashboardWidget.profiles,
+        DashboardWidget.trafficStats,
       ]);
     });
 
@@ -251,6 +259,7 @@ void main() {
         DashboardWidget.connectionStats,
         DashboardWidget.networkTakeover,
         DashboardWidget.vpnButton,
+        DashboardWidget.trafficStats,
       ]);
     });
 
@@ -1192,6 +1201,7 @@ void main() {
       expect(props.dashboardWidgets, [
         DashboardWidget.currentOutbound,
         DashboardWidget.proxyGroups,
+        DashboardWidget.trafficStats,
       ]);
       expect(props.hideIp, true);
     });

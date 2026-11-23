@@ -159,7 +159,7 @@ class _RangeChip extends StatelessWidget {
           color: selected
               ? colorScheme.primaryContainer
               : DashboardColors.of(context).tone,
-          shape: const StadiumBorder(),
+          shape: AppShape.full,
         ),
         child: Text(
           label,

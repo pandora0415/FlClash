@@ -154,6 +154,7 @@ final List<DashboardWidget> platformDefaultDashboardWidgets = system.isAndroid
         DashboardWidget.outboundMode,
         DashboardWidget.profiles,
         DashboardWidget.proxyGroups,
+        DashboardWidget.trafficStats,
       ]
     : defaultDashboardWidgets;
 
@@ -195,11 +196,13 @@ List<DashboardWidget> dashboardWidgetsFromJson(
   }
   final byName = DashboardWidget.values.asNameMap();
   if (dashboardWidgets.contains(DashboardWidget.currentOutbound.name)) {
-    return dashboardWidgets
-        .map((e) => _legacyDashboardWidgets[e] ?? byName[e])
-        .nonNulls
-        .toSet()
-        .toList();
+    return _withAddedDashboardWidgets(
+      dashboardWidgets
+          .map((e) => _legacyDashboardWidgets[e] ?? byName[e])
+          .nonNulls
+          .toSet()
+          .toList(),
+    );
   }
   final names = {
     for (final name in dashboardWidgets)
@@ -217,12 +220,20 @@ List<DashboardWidget> dashboardWidgetsFromJson(
     return platformDefaultDashboardWidgets;
   }
   final result = {DashboardWidget.currentOutbound, ...kept}.toList();
+  return _withAddedDashboardWidgets(result);
+}
+
+/// Puts the cards added after a saved list was written at its end, so an
+/// existing install sees the new card without losing its own order.
+List<DashboardWidget> _withAddedDashboardWidgets(
+  List<DashboardWidget> widgets,
+) {
   for (final widget in _addedDashboardWidgets) {
-    if (!result.contains(widget)) {
-      result.add(widget);
+    if (!widgets.contains(widget)) {
+      widgets.add(widget);
     }
   }
-  return result;
+  return widgets;
 }
 
 Object? _readSidebarExpanded(Map<dynamic, dynamic> json, String key) {
